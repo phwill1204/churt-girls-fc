@@ -1,0 +1,12 @@
+{
+  "name": "churt-girls-fc-api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for Churt Girls FC kit orders",
+  "scripts": {
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.7"
+  },
+  "devDependencies": {}
+}

@@ -412,7 +412,7 @@
             document.getElementById('playerCount').textContent = playerRowCount;
         }
 
-        async function submitOrder() {
+        function submitOrder() {
             const teamAge = document.getElementById('teamAge').value.trim();
             const teamName = document.getElementById('teamName').value.trim();
             const managerName = document.getElementById('managerName').value.trim();
@@ -435,11 +435,26 @@
                 const shortsType = row.querySelector('.shorts-type').value;
                 const socksSize = row.querySelector('.socks-size').value;
 
-                if (!playerName) continue;
+                // Skip empty rows
+                if (!playerName) {
+                    continue;
+                }
+
+                // Validate required fields (only player name is required)
+                if (!playerName) {
+                    alert(`Please enter a player name for row ${row.cells[0].textContent}.`);
+                    return;
+                }
 
                 players.push({
-                    playerName, sponsorName, shirtNumber, shirtType,
-                    shirtSize, shortsSize, shortsType, socksSize
+                    playerName,
+                    sponsorName,
+                    shirtNumber,
+                    shirtType,
+                    shirtSize,
+                    shortsSize,
+                    shortsType,
+                    socksSize
                 });
             }
 
@@ -448,35 +463,45 @@
                 return;
             }
 
-            const orderData = { teamAge, teamName, managerName, players };
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Sending...';
-
-            try {
-                const response = await fetch('/api/send-order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert(' Order submitted successfully!');
-                    if (confirm('Would you like to create another order?')) {
-                        location.reload();
-                    }
-                } else {
-                    alert(' Error: ' + (result.error || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert(' Failed to submit order. Please try again.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Order';
+            // Create email content with HTML table
+            const emailSubject = `Football Kit Order - ${teamAge} ${teamName}`;
+            
+            // Helper function to pad strings for alignment
+            function pad(str, length) {
+                str = String(str || '');
+                return str + ' '.repeat(Math.max(0, length - str.length));
             }
+            
+            // Create a properly aligned table using fixed-width formatting
+            let emailBody = `CHURT GIRLS FC - FOOTBALL KIT ORDER%0D%0A%0D%0A`;
+            emailBody += `Team: ${teamAge} ${teamName}%0D%0A`;
+            emailBody += `Manager: ${managerName}%0D%0A`;
+            emailBody += `Total Players: ${players.length}%0D%0A%0D%0A`;
+            
+            // Table header with proper spacing
+            emailBody += pad('Player Name', 20) + pad('Sponsor', 15) + pad('No.', 5) + pad('Shirt Type', 12) + pad('Shirt', 8) + pad('Shorts', 8) + pad('Shorts Type', 12) + pad('Socks', 15) + '%0D%0A';
+            emailBody += '-'.repeat(95) + '%0D%0A';
+            
+            // Add each player as a row
+            players.forEach((player) => {
+                emailBody += pad(player.playerName, 20) + 
+                            pad(player.sponsorName || '', 15) + 
+                            pad(player.shirtNumber || '', 5) + 
+                            pad(player.shirtType || '', 12) + 
+                            pad(player.shirtSize || '', 8) + 
+                            pad(player.shortsSize || '', 8) + 
+                            pad(player.shortsType || '', 12) + 
+                            pad(player.socksSize || '', 15) + '%0D%0A';
+            });
+            
+            emailBody += '-'.repeat(95) + '%0D%0A';
+            emailBody += `%0D%0AEnd of Order`;
+
+            // Create mailto link
+            const mailtoLink = `mailto:philipjohnwilliams@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${emailBody}`;
+            
+            // Open email client
+            window.location.href = mailtoLink;
         }
     </script>
 </body>
