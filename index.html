@@ -427,19 +427,17 @@
 
             for (let row of rows) {
                 const playerName = row.querySelector('.player-name').value.trim();
-                const sponsorName = row.querySelector('.sponsor-name').value.trim();
-                const shirtNumber = row.querySelector('.shirt-number').value;
-                const shirtType = row.querySelector('.shirt-type').value;
-                const shirtSize = row.querySelector('.shirt-size').value;
-                const shortsSize = row.querySelector('.shorts-size').value;
-                const shortsType = row.querySelector('.shorts-type').value;
-                const socksSize = row.querySelector('.socks-size').value;
-
                 if (!playerName) continue;
 
                 players.push({
-                    playerName, sponsorName, shirtNumber, shirtType,
-                    shirtSize, shortsSize, shortsType, socksSize
+                    playerName,
+                    sponsorName: row.querySelector('.sponsor-name').value.trim(),
+                    shirtNumber: row.querySelector('.shirt-number').value,
+                    shirtType: row.querySelector('.shirt-type').value,
+                    shirtSize: row.querySelector('.shirt-size').value,
+                    shortsSize: row.querySelector('.shorts-size').value,
+                    shortsType: row.querySelector('.shorts-type').value,
+                    socksSize: row.querySelector('.socks-size').value
                 });
             }
 
@@ -448,31 +446,83 @@
                 return;
             }
 
-            const orderData = { teamAge, teamName, managerName, players };
             const submitBtn = document.querySelector('.submit-btn');
             submitBtn.disabled = true;
             submitBtn.textContent = 'Sending...';
 
             try {
-                const response = await fetch('/api/send-order', {
+                // Build HTML email content
+                let playersHtml = players.map((p, i) => `
+                    <tr style="background-color: ${i % 2 === 0 ? '#f9f9f9' : '#fff'};">
+                        <td style="padding:8px;border:1px solid #ddd;">${p.playerName}</td>
+                        <td style="padding:8px;border:1px solid #ddd;">${p.sponsorName || ''}</td>
+                        <td style="padding:8px;border:1px solid #ddd;">${p.shirtNumber || ''}</td>
+                        <td style="padding:8px;border:1px solid #ddd;">${p.shirtType || ''}</td>
+                        <td style="padding:8px;border:1px solid #ddd;">${p.shirtSize || ''}</td>
+                        <td style="padding:8px;border:1px solid #ddd;">${p.shortsSize || ''}</td>
+                        <td style="padding:8px;border:1px solid #ddd;">${p.shortsType || ''}</td>
+                        <td style="padding:8px;border:1px solid #ddd;">${p.socksSize || ''}</td>
+                    </tr>
+                `).join('');
+
+                const emailHtml = `
+                    <div style="font-family:Arial,sans-serif;">
+                        <div style="background:linear-gradient(135deg,#ff8c00 0%,#ff6b35 100%);color:white;padding:20px;">
+                            <h2>Churt Girls FC - Kit Order</h2>
+                        </div>
+                        <div style="padding:20px;">
+                            <h3>Order Details</h3>
+                            <p><strong>Team Age:</strong> ${teamAge}</p>
+                            <p><strong>Team Name:</strong> ${teamName}</p>
+                            <p><strong>Manager Name:</strong> ${managerName}</p>
+                            <h3>Player Orders (${players.length} player${players.length !== 1 ? 's' : ''})</h3>
+                            <table style="border-collapse:collapse;width:100%;">
+                                <thead>
+                                    <tr style="background-color:#ff8c00;color:white;">
+                                        <th style="padding:10px;border:1px solid #ddd;">Player</th>
+                                        <th style="padding:10px;border:1px solid #ddd;">Sponsor</th>
+                                        <th style="padding:10px;border:1px solid #ddd;">Number</th>
+                                        <th style="padding:10px;border:1px solid #ddd;">Shirt Type</th>
+                                        <th style="padding:10px;border:1px solid #ddd;">Shirt Size</th>
+                                        <th style="padding:10px;border:1px solid #ddd;">Shorts Size</th>
+                                        <th style="padding:10px;border:1px solid #ddd;">Shorts Type</th>
+                                        <th style="padding:10px;border:1px solid #ddd;">Socks Size</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${playersHtml}</tbody>
+                            </table>
+                            <p style="margin-top:20px;color:#666;font-size:12px;">
+                                Submitted on ${new Date().toLocaleString()}
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                const formData = new FormData();
+                formData.append('access_key', '87691359-56d2-429b-8e20-65da1fd7c9dc');
+                formData.append('subject', `Kit Order - ${teamAge} ${teamName}`);
+                formData.append('from_name', 'Churt Girls FC Order Form');
+                formData.append('email', 'philipjohnwilliams@gmail.com');
+                formData.append('message', emailHtml);
+
+                const response = await fetch('https://api.web3forms.com/submit', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
+                    body: formData
                 });
 
                 const result = await response.json();
 
-                if (response.ok) {
-                    alert(' Order submitted successfully!');
+                if (result.success) {
+                    alert(' Order submitted successfully! Check your email for confirmation.');
                     if (confirm('Would you like to create another order?')) {
                         location.reload();
                     }
                 } else {
-                    alert(' Error: ' + (result.error || 'Unknown error'));
+                    alert(' Error: ' + (result.message || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert(' Failed to submit order. Please try again.');
+                alert(' Failed to submit order. Please check your connection and try again.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit Order';
