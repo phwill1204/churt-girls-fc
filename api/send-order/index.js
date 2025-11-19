@@ -1,5 +1,3 @@
-const nodemailer = require('nodemailer');
-
 module.exports = async function (context, req) {
     context.log('Processing order submission');
 
@@ -15,35 +13,38 @@ module.exports = async function (context, req) {
     }
 
     try {
-        // Create email transporter using SendGrid SMTP
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.sendgrid.net',
-            port: 587,
-            auth: {
-                user: 'apikey',
-                pass: process.env.SENDGRID_API_KEY
-            }
-        });
-
         // Build HTML email with table
         const htmlContent = buildEmailHtml(orderData);
 
-        // Send email
-        const info = await transporter.sendMail({
-            from: 'noreply@churtgirlsfc.com', // You can customize this
-            to: 'philipjohnwilliams@gmail.com',
-            subject: `Kit Order - ${orderData.teamName || 'Churt Girls FC'}`,
-            html: htmlContent
+        // Send email using Resend API
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                from: 'Churt Girls FC <onboarding@resend.dev>',
+                to: ['philipjohnwilliams@gmail.com'],
+                subject: `Kit Order - ${orderData.teamName || 'Churt Girls FC'}`,
+                html: htmlContent
+            })
         });
 
-        context.log('Email sent successfully:', info.messageId);
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Failed to send email');
+        }
+
+        context.log('Email sent successfully:', result.id);
 
         context.res = {
             status: 200,
             body: { 
                 success: true, 
                 message: "Order submitted successfully!",
-                messageId: info.messageId
+                messageId: result.id
             }
         };
 

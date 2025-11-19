@@ -4,9 +4,5 @@
   "description": "Azure Functions API for Churt Girls FC kit orders",
   "scripts": {
     "test": "echo \"No tests yet\""
-  },
-  "dependencies": {
-    "nodemailer": "^6.9.7"
-  },
-  "devDependencies": {}
+  }
 }
