@@ -498,28 +498,45 @@
                     </div>
                 `;
 
-                // Build plain text email with proper formatting
+                // Helper function to pad text for fixed-width columns
+                function pad(text, width) {
+                    text = String(text || '');
+                    return text.length >= width ? text.substring(0, width) : text + ' '.repeat(width - text.length);
+                }
+
+                // Build plain text email with fixed-width table
                 let plainText = `CHURT GIRLS FC - FOOTBALL KIT ORDER\n\n`;
                 plainText += `Team Age: ${teamAge}\n`;
                 plainText += `Team Name: ${teamName}\n`;
                 plainText += `Manager: ${managerName}\n`;
                 plainText += `Total Players: ${players.length}\n\n`;
-                plainText += `PLAYER DETAILS:\n`;
-                plainText += `${'='.repeat(120)}\n`;
+                plainText += `PLAYER ORDERS:\n`;
+                plainText += `${'-'.repeat(130)}\n`;
                 
-                players.forEach((p, i) => {
-                    plainText += `\nPlayer ${i + 1}:\n`;
-                    plainText += `  Name: ${p.playerName}\n`;
-                    if (p.sponsorName) plainText += `  Sponsor: ${p.sponsorName}\n`;
-                    if (p.shirtNumber) plainText += `  Number: ${p.shirtNumber}\n`;
-                    if (p.shirtType) plainText += `  Shirt Type: ${p.shirtType}\n`;
-                    if (p.shirtSize) plainText += `  Shirt Size: ${p.shirtSize}\n`;
-                    if (p.shortsSize) plainText += `  Shorts Size: ${p.shortsSize}\n`;
-                    if (p.shortsType) plainText += `  Shorts Type: ${p.shortsType}\n`;
-                    if (p.socksSize) plainText += `  Socks Size: ${p.socksSize}\n`;
-                    plainText += `${'='.repeat(120)}\n`;
+                // Table header
+                plainText += pad('Player Name', 20) + ' | ' + 
+                             pad('Sponsor', 15) + ' | ' + 
+                             pad('No.', 4) + ' | ' + 
+                             pad('Shirt Type', 11) + ' | ' + 
+                             pad('Shirt', 6) + ' | ' + 
+                             pad('Shorts', 6) + ' | ' + 
+                             pad('Shorts Type', 11) + ' | ' + 
+                             pad('Socks', 12) + '\n';
+                plainText += `${'-'.repeat(130)}\n`;
+                
+                // Table rows
+                players.forEach((p) => {
+                    plainText += pad(p.playerName, 20) + ' | ' + 
+                                 pad(p.sponsorName || '', 15) + ' | ' + 
+                                 pad(p.shirtNumber || '', 4) + ' | ' + 
+                                 pad(p.shirtType || '', 11) + ' | ' + 
+                                 pad(p.shirtSize || '', 6) + ' | ' + 
+                                 pad(p.shortsSize || '', 6) + ' | ' + 
+                                 pad(p.shortsType || '', 11) + ' | ' + 
+                                 pad(p.socksSize || '', 12) + '\n';
                 });
                 
+                plainText += `${'-'.repeat(130)}\n`;
                 plainText += `\nSubmitted: ${new Date().toLocaleString()}\n`;
 
                 const formData = new FormData();
