@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Kit Order Form - Table View</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        .logo-left,
+        .logo-right {
+            position: fixed;
+            top: 20%;
+            transform: translateY(0);
+            width: 150px;
+            height: auto;
+            opacity: 0.9;
+            z-index: 1;
+        }
+
+        .logo-left {
+            left: 20px;
+        }
+
+        .logo-right {
+            right: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .team-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .team-info h2 {
+            color: #667eea;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: white;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .row-number {
+            text-align: center;
+            font-weight: 600;
+            color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .add-row-btn {
+            padding: 12px 24px;
+            background: #34a853;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .add-row-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 168, 83, 0.3);
+        }
+
+        .submit-btn {
+            padding: 12px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .player-count {
+            color: #666;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: 8px 4px;
+                font-size: 12px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .logo-left,
+            .logo-right {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <img src="churtlogo.png" alt="Churt Girls FC Logo" class="logo-left">
+    <img src="churtlogo.png" alt="Churt Girls FC Logo" class="logo-right">
+    
+    <div class="container">
+        <h1>Churt Girls FC</h1>
+        <p class="subtitle">Football Kit Order Form</p>
+
+        <!-- Team Information -->
+        <div class="team-info">
+            <h2>Team Information</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="teamAge">Team Age <span class="required">*</span></label>
+                    <input type="text" id="teamAge" placeholder="e.g. U11" required>
+                </div>
+                <div class="form-group">
+                    <label for="teamName">Team Name <span class="required">*</span></label>
+                    <input type="text" id="teamName" placeholder="e.g. Luna" required>
+                </div>
+                <div class="form-group">
+                    <label for="managerName">Manager Name <span class="required">*</span></label>
+                    <input type="text" id="managerName" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Players Table -->
+        <div class="table-container">
+            <table id="playersTable">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">#</th>
+                        <th style="width: 150px;">Player Name <span class="required">*</span></th>
+                        <th style="width: 130px;">Sponsor Name</th>
+                        <th style="width: 80px;">Number</th>
+                        <th style="width: 110px;">Shirt Type</th>
+                        <th style="width: 120px;">Shirt Size</th>
+                        <th style="width: 120px;">Shorts Size</th>
+                        <th style="width: 120px;">Shorts Type</th>
+                        <th style="width: 130px;">Socks Size</th>
+                        <th style="width: 60px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="playersTableBody">
+                    <!-- Rows will be added here dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button type="button" class="add-row-btn" onclick="addPlayerRow()">➕ Add Player Row</button>
+            <span class="player-count">Players: <span id="playerCount">0</span></span>
+            <button type="button" class="submit-btn" onclick="submitOrder()">Submit Order</button>
+        </div>
+    </div>
+
+    <script>
+        let playerRowCount = 0;
+
+        // Add initial rows
+        window.onload = function() {
+            for (let i = 0; i < 3; i++) {
+                addPlayerRow();
+            }
+        };
+
+        function addPlayerRow() {
+            playerRowCount++;
+            const tbody = document.getElementById('playersTableBody');
+            const row = tbody.insertRow();
+            
+            row.innerHTML = `
+                <td class="row-number">${playerRowCount}</td>
+                <td><input type="text" class="player-name" placeholder="Player name" required></td>
+                <td><input type="text" class="sponsor-name" placeholder="Optional"></td>
+                <td><input type="number" class="shirt-number" min="0" max="99" placeholder="0-99"></td>
+                <td>
+                    <select class="shirt-type">
+                        <option value="">Select</option>
+                        <option value="Playing">Playing</option>
+                        <option value="Keeper">Keeper</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="shirt-size">
+                        <option value="">Select</option>
+                        <option value="XSY">XSY</option>
+                        <option value="SY">SY</option>
+                        <option value="MY">MY</option>
+                        <option value="LY">LY</option>
+                        <option value="XLY">XLY</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="shorts-size">
+                        <option value="">Select</option>
+                        <option value="XSY">XSY</option>
+                        <option value="SY">SY</option>
+                        <option value="MY">MY</option>
+                        <option value="LY">LY</option>
+                        <option value="XLY">XLY</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="shorts-type">
+                        <option value="">Select</option>
+                        <option value="Unisex">Unisex</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </td>
+                <td>
+                    <select class="socks-size">
+                        <option value="">Select</option>
+                        <option value="12-2 Kids">12-2 Kids</option>
+                        <option value="3-6 Juniors">3-6 Juniors</option>
+                        <option value="7-11 Adults">7-11 Adults</option>
+                    </select>
+                </td>
+                <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+            `;
+            
+            updatePlayerCount();
+        }
+
+        function deleteRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            renumberRows();
+            updatePlayerCount();
+        }
+
+        function renumberRows() {
+            const rows = document.querySelectorAll('#playersTableBody tr');
+            rows.forEach((row, index) => {
+                row.cells[0].textContent = index + 1;
+            });
+            playerRowCount = rows.length;
+        }
+
+        function updatePlayerCount() {
+            document.getElementById('playerCount').textContent = playerRowCount;
+        }
+
+        function submitOrder() {
+            const teamAge = document.getElementById('teamAge').value.trim();
+            const teamName = document.getElementById('teamName').value.trim();
+            const managerName = document.getElementById('managerName').value.trim();
+
+            if (!teamAge || !teamName || !managerName) {
+                alert('Please fill in all team information fields.');
+                return;
+            }
+
+            const rows = document.querySelectorAll('#playersTableBody tr');
+            const players = [];
+
+            for (let row of rows) {
+                const playerName = row.querySelector('.player-name').value.trim();
+                const sponsorName = row.querySelector('.sponsor-name').value.trim();
+                const shirtNumber = row.querySelector('.shirt-number').value;
+                const shirtType = row.querySelector('.shirt-type').value;
+                const shirtSize = row.querySelector('.shirt-size').value;
+                const shortsSize = row.querySelector('.shorts-size').value;
+                const shortsType = row.querySelector('.shorts-type').value;
+                const socksSize = row.querySelector('.socks-size').value;
+
+                // Skip empty rows
+                if (!playerName) {
+                    continue;
+                }
+
+                // Validate required fields (only player name is required)
+                if (!playerName) {
+                    alert(`Please enter a player name for row ${row.cells[0].textContent}.`);
+                    return;
+                }
+
+                players.push({
+                    playerName,
+                    sponsorName,
+                    shirtNumber,
+                    shirtType,
+                    shirtSize,
+                    shortsSize,
+                    shortsType,
+                    socksSize
+                });
+            }
+
+            if (players.length === 0) {
+                alert('Please add at least one player to the order.');
+                return;
+            }
+
+            // Create email content with HTML table
+            const emailSubject = `Football Kit Order - ${teamAge} ${teamName}`;
+            
+            // Helper function to pad strings for alignment
+            function pad(str, length) {
+                str = String(str || '');
+                return str + ' '.repeat(Math.max(0, length - str.length));
+            }
+            
+            // Create a properly aligned table using fixed-width formatting
+            let emailBody = `CHURT GIRLS FC - FOOTBALL KIT ORDER%0D%0A%0D%0A`;
+            emailBody += `Team: ${teamAge} ${teamName}%0D%0A`;
+            emailBody += `Manager: ${managerName}%0D%0A`;
+            emailBody += `Total Players: ${players.length}%0D%0A%0D%0A`;
+            
+            // Table header with proper spacing
+            emailBody += pad('Player Name', 20) + pad('Sponsor', 15) + pad('No.', 5) + pad('Shirt Type', 12) + pad('Shirt', 8) + pad('Shorts', 8) + pad('Shorts Type', 12) + pad('Socks', 15) + '%0D%0A';
+            emailBody += '-'.repeat(95) + '%0D%0A';
+            
+            // Add each player as a row
+            players.forEach((player) => {
+                emailBody += pad(player.playerName, 20) + 
+                            pad(player.sponsorName || '', 15) + 
+                            pad(player.shirtNumber || '', 5) + 
+                            pad(player.shirtType || '', 12) + 
+                            pad(player.shirtSize || '', 8) + 
+                            pad(player.shortsSize || '', 8) + 
+                            pad(player.shortsType || '', 12) + 
+                            pad(player.socksSize || '', 15) + '%0D%0A';
+            });
+            
+            emailBody += '-'.repeat(95) + '%0D%0A';
+            emailBody += `%0D%0AEnd of Order`;
+
+            // Create mailto link
+            const mailtoLink = `mailto:philipjohnwilliams@gmail.com?subject=${encodeURIComponent(emailSubject)}&body=${emailBody}`;
+            
+            // Open email client
+            window.location.href = mailtoLink;
+        }
+    </script>
+</body>
+</html>
