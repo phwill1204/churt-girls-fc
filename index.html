@@ -544,8 +544,7 @@
                 formData.append('subject', `Kit Order - ${teamAge} ${teamName}`);
                 formData.append('from_name', 'Churt Girls FC Order Form');
                 formData.append('message', emailHtml);
-                formData.append('content_type', 'html');
-                formData.append('html', 'true');
+                formData.append('email_format', 'html');
 
                 const response = await fetch('https://api.web3forms.com/submit', {
                     method: 'POST',
